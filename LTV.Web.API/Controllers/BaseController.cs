@@ -17,6 +17,10 @@ using System.Web.Http.Results;
 
 namespace LTV.Web.API.Controllers
 {
+    /// <summary>
+    /// Base Controller with basic CRUD APIs. It can be easily used by dervied controller out of the ox
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class BaseController<T> : ApiController  where T : class, IObjectState
     {
         private readonly IService<T> _service;
@@ -28,16 +32,22 @@ namespace LTV.Web.API.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        // GET: api/Snapshots
-        public async Task<IEnumerable<T>> GetAll()
+        /// <summary>
+        /// Get all items from the repo
+        /// </summary>
+        /// <returns></returns>
+        protected virtual async Task<IEnumerable<T>> GetAll()
         {
             return await _service.Query().SelectAsync();
 
         }
 
-        // GET: api/Snapshots/5
-        //[ResponseType(T.GetType())]
-        public async Task<IHttpActionResult> Get(long id)
+       /// <summary>
+       /// Get item by Id
+       /// </summary>
+       /// <param name="id"></param>
+       /// <returns></returns>
+        protected virtual async Task<IHttpActionResult> Get(long id)
         {
             var model = await _service.FindAsync(id);
             if (model == null)
@@ -48,9 +58,13 @@ namespace LTV.Web.API.Controllers
             return Ok(model);
         }
 
-        // PUT: api/Snapshots/5
-        //[ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> Put(long id, T model)
+       /// <summary>
+       /// Update an item
+       /// </summary>
+       /// <param name="id">Item id</param>
+       /// <param name="model">Item model</param>
+       /// <returns></returns>
+        public virtual async Task<IHttpActionResult> Put(long id, T model)
         {
             if (!ModelState.IsValid)
             {
@@ -85,9 +99,12 @@ namespace LTV.Web.API.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Snapshots
-        //[ResponseType(typeof(T))]
-        public async Task<IHttpActionResult> Post(T model)
+         /// <summary>
+         /// Create a new item
+         /// </summary>
+         /// <param name="model"></param>
+         /// <returns></returns>
+        public virtual async Task<IHttpActionResult> Post(T model)
         {
             if (!ModelState.IsValid)
             {
@@ -112,9 +129,13 @@ namespace LTV.Web.API.Controllers
             return CreatedAtRoute("DefaultApi", new { id = model.Id }, model);
         }
 
-        // DELETE: api/Snapshots/5
-        //[ResponseType(typeof(T))]
-        public async Task<IHttpActionResult> DeleteSnapshot(long id)
+       
+        /// <summary>
+        /// Delete an item
+        /// </summary>
+        /// <param name="id">item id</param>
+        /// <returns></returns>
+        public virtual async Task<IHttpActionResult> DeleteSnapshot(long id)
         {
             T snapshot = await _service.FindAsync(id);
             if (snapshot == null)
